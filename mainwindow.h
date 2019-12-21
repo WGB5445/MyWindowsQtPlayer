@@ -9,6 +9,8 @@
 #include <QMediaPlaylist>
 #include <QListWidget>
 #include <QList>
+#include <QEvent>
+#include <QMouseEvent>
 
 #include <QPoint>
 QT_BEGIN_NAMESPACE
