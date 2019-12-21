@@ -118,6 +118,28 @@ connect(ui->listWidget,&QListWidget::itemDoubleClicked,[=](QListWidgetItem *item
    music->setMedia(QUrl::fromLocalFile(list1[ui->listWidget->row(item)]));
    music->play();
 });
+connect(ui->pushButton_7,&QPushButton::clicked,[=]{
+    int i = list1.count();
+    list1=QFileDialog::getOpenFileNames(this,QString::fromLocal8Bit("文件"),"../",QString::fromLocal8Bit("音频文件(*.mp3)"));
+                                                         //用个文件登陆框来选择.mp3文件，包括多个文件
+
+   if(list1.count()  != i ){
+   music->setMedia(QUrl::fromLocalFile(list1.first()));
+   ui->listWidget->clear();
+   playlist->clear();
+   for(int i=0;i<list1.size();i++){
+
+   path=QDir::toNativeSeparators(list1.at(i));
+
+   playlist->addMedia(QUrl::fromLocalFile(path));
+   QString Name=path.split("\\").last();
+   QListWidgetItem *item = new QListWidgetItem(Name);
+   item->setToolTip(Name);
+
+   ui->listWidget->addItem(item);
+   }
+   }
+});
 }
 
 
