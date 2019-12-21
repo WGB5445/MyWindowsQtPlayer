@@ -38,7 +38,9 @@ ui->listWidget->addItem(item);
 query.exec(QString("insert into values(%1,'%2','%3')").arg(i).arg(Name).arg(path));
 
 }
-
+playlist->setCurrentIndex(0);//设置当前音乐
+ui->listWidget->scrollToItem(ui->listWidget->item(0));//滚动到当前音乐
+music->setMedia(QUrl::fromLocalFile(list1[0]));
 }
 connect(ui->pushButton,&QPushButton::clicked,[=]{
     music->play();
@@ -123,10 +125,10 @@ connect(ui->pushButton_7,&QPushButton::clicked,[=]{
     list1=QFileDialog::getOpenFileNames(this,QString::fromLocal8Bit("文件"),"../",QString::fromLocal8Bit("音频文件(*.mp3)"));
                                                          //用个文件登陆框来选择.mp3文件，包括多个文件
 
-   if(list1.count()  != i ){
+   if(list1.count()  >= i ){
    music->setMedia(QUrl::fromLocalFile(list1.first()));
    ui->listWidget->clear();
-   playlist->clear();
+
    for(int i=0;i<list1.size();i++){
 
    path=QDir::toNativeSeparators(list1.at(i));
