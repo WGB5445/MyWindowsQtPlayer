@@ -122,10 +122,14 @@ connect(ui->listWidget,&QListWidget::itemDoubleClicked,[=](QListWidgetItem *item
 });
 connect(ui->pushButton_7,&QPushButton::clicked,[=]{
     int i = list1.count();
-    list1=QFileDialog::getOpenFileNames(this,QString::fromLocal8Bit("文件"),"../",QString::fromLocal8Bit("音频文件(*.mp3)"));
+    QStringList list=QFileDialog::getOpenFileNames(this,QString::fromLocal8Bit("文件"),"../",QString::fromLocal8Bit("音频文件(*.mp3)"));
                                                          //用个文件登陆框来选择.mp3文件，包括多个文件
 
-   if(list1.count()  >= i ){
+   if(!list.isEmpty()){
+       for(int a = 0;a < list.size();a++)
+        {
+           list1.push_back(list[a]);
+       }
    music->setMedia(QUrl::fromLocalFile(list1.first()));
    ui->listWidget->clear();
 
