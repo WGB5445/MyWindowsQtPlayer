@@ -39,14 +39,16 @@ public:
 
 
 
-
-
+    void enterEvent(QEvent *event);
+    void leaveEvent(QEvent *event);
    void mousePressEvent(QMouseEvent *event);
    void  mouseMoveEvent(QMouseEvent *event);
 
    void mouseReleaseEvent(QMouseEvent *event);
+   void ReadLyric(QString site);
 private slots:
     void on_pushButton_2_clicked();
+
 
 private:
     Ui::MainWindow *ui;
