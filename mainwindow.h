@@ -26,7 +26,7 @@ public:
     ~MainWindow();
     void getIndex();
 
-    QString path;
+
     QStringList list1;
     QPoint offset;
 

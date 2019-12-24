@@ -7,36 +7,34 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
-    QMediaPlayer  *music = new QMediaPlayer(this);
-    QMediaPlaylist *playlist = new QMediaPlaylist(this);
-    playlist->setPlaybackMode(QMediaPlaylist::Loop);
-    music->setPlaylist(playlist);
-    ui->verticalSlider->setMaximum(100);
-    ui->verticalSlider->setValue(50);
-    music->setVolume(50);
-    this->setWindowFlags(Qt::FramelessWindowHint);
-
-
-
-    QSqlQuery query;
-
+    QMediaPlayer  *music = new QMediaPlayer(this); //实例化一个QMediaPlayer的对象并指定父类为MainWindow
+    QMediaPlaylist *playlist = new QMediaPlaylist(this);//实例化一个QMediaPlaylist的对象并指定父类为MainWindow
+    playlist->setPlaybackMode(QMediaPlaylist::Loop);//把播放列表设为循环播放模式（但我感觉好像没啥用没有应有的效果，或者我不会用）
+    music->setPlaylist(playlist);//让播放器和播放列表链接起来
+    ui->verticalSlider->setMaximum(100);//设置纵向的音量条最大值为100（默认为0~99）
+    ui->verticalSlider->setValue(50);//设置纵向的音量条的初始值为50
+    music->setVolume(50);//设置音乐播放器的初始音量为50
+    this->setWindowFlags(Qt::FramelessWindowHint);//设定本MainWindow窗口无外框
+    //创建一个文件对话框，提供选择开始播放时的列表歌曲
     list1=QFileDialog::getOpenFileNames(this,QString::fromLocal8Bit("文件"),"../",QString::fromLocal8Bit("音频文件(*.mp3)"));
-    //用个文件登陆框来选择.mp3文件，包括多个文件
 
+    //如果获取的文件路径的个数是0个，就不执行以下操作
+    //如果获取文件路径个数不是0，则执行
     if(!list1.isEmpty()){
-        music->setMedia(QUrl::fromLocalFile(list1.first()));
-
+        music->setMedia(QUrl::fromLocalFile(list1.first()));//将音乐播放器的播放曲目设置为列表中的第一个
+        //根据列表中路径的个数来循环执行
+        //目的是对UI界面中的listwidget进行插入歌曲名的操作
         for(int i=0;i<list1.size();i++){
 
-            path=QDir::toNativeSeparators(list1.at(i));
+         QString  path=QDir::toNativeSeparators(list1.at(i));  //将地址中的/转换为在windows下的格式\\
+                                                               //如果想\\转为/可以使用 QDir::fromNativeSeparators
 
-            playlist->addMedia(QUrl::fromLocalFile(path));
-            QString Name=path.split("\\").last();
-            QListWidgetItem *item = new QListWidgetItem(Name);
-            item->setToolTip(Name);
+            playlist->addMedia(QUrl::fromLocalFile(path)); //将path存放的“地址”以地址的形式添加到歌曲列表里
+            QString Name=path.split("\\").last();          //将地址按“\\”切割，将切割后的最后一个字符串（也就是歌曲名）保存在name中
+            QListWidgetItem *item = new QListWidgetItem(Name);//实例化一个listwidgetitem的对象（可以理解listwidget里的一行）
+            item->setText(Name);                        //给这个item设置歌曲名称
 
-            ui->listWidget->addItem(item);
-            query.exec(QString("insert into values(%1,'%2','%3')").arg(i).arg(Name).arg(path));
+            ui->listWidget->addItem(item);             //将刚刚设置好的一行插入到listwidget中
 
         }
         playlist->setCurrentIndex(0);//设置当前音乐
@@ -143,12 +141,12 @@ MainWindow::MainWindow(QWidget *parent)
 
             for(int i=0;i<list1.size();i++){
 
-                path=QDir::toNativeSeparators(list1.at(i));
+             QString   path=QDir::toNativeSeparators(list1.at(i));
 
                 playlist->addMedia(QUrl::fromLocalFile(path));
                 QString Name=path.split("\\").last();
                 QListWidgetItem *item = new QListWidgetItem(Name);
-                item->setToolTip(Name);
+                item->setText(Name);
 
                 ui->listWidget->addItem(item);
             }
