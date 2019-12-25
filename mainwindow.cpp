@@ -39,7 +39,7 @@ MainWindow::MainWindow(QWidget *parent)
         }
         playlist->setCurrentIndex(0);//设置当前音乐
         ui->listWidget->scrollToItem(ui->listWidget->item(0));//滚动到当前音乐
-        music->setMedia(QUrl::fromLocalFile(list1[0]));
+        music->setMedia(QUrl::fromLocalFile(list1[0]));//把歌曲列表的第一个设为播放
     }
     //播放按钮 信号链接到播放功能
     connect(ui->pushButton,&QPushButton::clicked,[=]{
@@ -50,7 +50,8 @@ MainWindow::MainWindow(QWidget *parent)
         music->pause();
 
     });
-
+    //进度条位置获取，播放时间改变后，播放器发出信号，用函数接收信号并设置进度条为当前位置(因为当前进度条最大长度设置为歌曲时间长度，所以播放时间就是位置)
+    //设置时间标签为当前时间
     connect(music,&QMediaPlayer::positionChanged,[=](qint64 position){
 
 
@@ -65,30 +66,33 @@ MainWindow::MainWindow(QWidget *parent)
 
 
         ui->horizontalSlider->setRange(0,duration);//根据播放时长来设置滑块的范围
-        ui->horizontalSlider->setEnabled(duration>0);
-        ui->label_2->setText(Time(duration));
-        ui->horizontalSlider->setPageStep(duration/10);
-
+        ui->horizontalSlider->setEnabled(duration>0);//通过是否有播放时长，来判断是否有歌，由此设置是否可以被响应
+        ui->label_2->setText(Time(duration));//设置时长标签的显示，为当前歌曲的总时长
+        ui->horizontalSlider->setPageStep(duration/10);//设置滑块的一步的长度为总时长的10分之一
 
     });
+    //当列表当前索引改变时，也就是换歌时，让对应的item处于被选择的状态
     connect(playlist,&QMediaPlaylist::currentIndexChanged,[=](int value){
 
         ui->listWidget->item(value)->setSelected(true);
     });
+    //上一曲的按键点击
     connect(ui->pushButton_3,&QPushButton::clicked,[=](){
 
 
-        int row = playlist->mediaCount();//获取歌曲数量
-        int current  = playlist->currentIndex();//获取当前位置
+        int row = playlist->mediaCount();//获取歌曲的数量
+        int current  = playlist->currentIndex();//获取当前歌曲索引位置
+        //如果当前为第一首歌，点击上一曲时，应转到最后一首歌
         if(current == 0){
             current = playlist->mediaCount();
         }
+        //设置为上一曲，所以减一
         current = current - 1;
-        playlist->setCurrentIndex(current);//设置当前音乐
-        ui->listWidget->scrollToItem(ui->listWidget->item(current));//滚动到当前音乐
+        playlist->setCurrentIndex(current);//设置当前歌曲
+        ui->listWidget->scrollToItem(ui->listWidget->item(current));//滚动到当前歌曲对应的item
 
-        music->setMedia(QUrl::fromLocalFile(list1[current]));
-        music->play();
+        music->setMedia(QUrl::fromLocalFile(list1[current]));//把当前歌曲路径名给播放器
+        music->play();//开始播放
 
     });
     connect(ui->pushButton_4,&QPushButton::clicked,[=](){
