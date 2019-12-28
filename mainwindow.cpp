@@ -99,32 +99,37 @@ MainWindow::MainWindow(QWidget *parent)
 
 
         int row = playlist->mediaCount();//获取歌曲数量
-        int current  = playlist->currentIndex();//获取当前位置
+        int current  = playlist->currentIndex();//获取当前歌曲索引位置
+        //如果当前为最后一首歌，点击下一曲时，应转到第一首歌
         if(current == row - 1){
             current= -1 ;
         }
+        //设置为下一曲，所以加一
         current = current + 1;
-        playlist->setCurrentIndex(current);//设置当前音乐
-        ui->listWidget->scrollToItem(ui->listWidget->item(current));//滚动到当前音乐
-        music->setMedia(QUrl::fromLocalFile(list1[current]));
-        qDebug()<<list1[current];
-        music->play();
+        playlist->setCurrentIndex(current);//设置当前歌曲
+        ui->listWidget->scrollToItem(ui->listWidget->item(current));//滚动到当前歌曲对应的item
+        music->setMedia(QUrl::fromLocalFile(list1[current]));//把当前歌曲路径名给播放器
+        music->play();//开始播放
 
 
 
 
 
     });
+    //当垂直滑条(音量条)的数值改变时这个函数被触发
     connect(ui->verticalSlider,&QSlider::valueChanged,[=](int val){
-        music->setVolume(val);
+        music->setVolume(val);//当音量条的值被改变时设置音乐播放器的音量大小为改变后的值
     });
 
 
-
+    //当点击关闭按钮时这个函数触发
     connect(ui->pushButton_5,&QPushButton::clicked,[=]{
-        this->close();
+        this->close();//这个窗口关闭
     });
+    //当横向滑条(进度条)的数值改变时这个函数触发
+    //进度条的值改变时，设置音乐播放器的播放位置为进度条的值
     connect(ui->horizontalSlider,&QSlider::sliderMoved,music,&QMediaPlayer::setPosition);
+    //当列表被双击时这个函数触发
     connect(ui->listWidget,&QListWidget::itemDoubleClicked,[=](QListWidgetItem *item){
         playlist->setCurrentIndex(ui->listWidget->row(item));
         music->setMedia(QUrl::fromLocalFile(list1[ui->listWidget->row(item)]));
