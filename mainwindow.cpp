@@ -131,23 +131,26 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->horizontalSlider,&QSlider::sliderMoved,music,&QMediaPlayer::setPosition);
     //当列表被双击时这个函数触发
     connect(ui->listWidget,&QListWidget::itemDoubleClicked,[=](QListWidgetItem *item){
-        playlist->setCurrentIndex(ui->listWidget->row(item));
-        music->setMedia(QUrl::fromLocalFile(list1[ui->listWidget->row(item)]));
-        music->play();
+        playlist->setCurrentIndex(ui->listWidget->row(item));// 将点击的item的行数传给播放列表
+        music->setMedia(QUrl::fromLocalFile(list1[ui->listWidget->row(item)]));//将点击的item的行数传给音乐播放器
+        music->play();//开始播放
     });
+    //点击添加按钮后触发这个函数
     connect(ui->pushButton_7,&QPushButton::clicked,[=]{
-        int i = list1.count();
         QStringList list=QFileDialog::getOpenFileNames(this,QString::fromLocal8Bit("文件"),"../",QString::fromLocal8Bit("音频文件(*.mp3)"));
-        //用个文件登陆框来选择.mp3文件，包括多个文件
-
+        //用个文件登陆框来选择.mp3文件
+        //判断是否添加了文件
         if(!list.isEmpty()){
+            //使用for循环，将本次的文件插入到之前的播放列表中
             for(int a = 0;a < list.size();a++)
             {
                 list1.push_back(list[a]);
             }
+            //设置音乐播放器的播放第一首列表里的第一首歌
             music->setMedia(QUrl::fromLocalFile(list1.first()));
+            //清空界面中的播放列表
             ui->listWidget->clear();
-
+            //将播放列表插入到界面中的播放列表中
             for(int i=0;i<list1.size();i++){
 
              QString   path=QDir::toNativeSeparators(list1.at(i));
@@ -163,62 +166,15 @@ MainWindow::MainWindow(QWidget *parent)
     });
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 MainWindow::~MainWindow()
 {
     delete ui;
 }
 
-void MainWindow::enterEvent(QEvent *event)
-{
-    QRect rc;
-        QRect rect;
-        rect = this->geometry();
-        rc.setRect(rect.x(),rect.y(),rect.width(),rect.height());
-        if(rect.top()<0)
-        {
-            rect.setX(rc.x());
-            rect.setY(0);
-            move(rc.x(),-2);
-        }
-
-}
-
-void MainWindow::leaveEvent(QEvent *event)
-{
-    QRect rc;
-        QRect rect;
-        rect = this->geometry();
-        rc.setRect(rect.x(),rect.y(),rect.width(),rect.height());
-        if(rect.top()<0)
-        {
-            move(rc.x(),-rc.height()+2);
-        }
-}
-
-
-
+//重写多个鼠标事件，使之可以实现按压后可拖动
 void MainWindow::mousePressEvent(QMouseEvent *event)
 {
+
     offset=event->globalPos()-pos();
     event->accept();
     if(event->button()==Qt::LeftButton)
@@ -249,7 +205,6 @@ void MainWindow::ReadLyric(QString site)
         ui->listWidget_2->clear();
         while (!file.atEnd())
         {
-
             QByteArray line = file.readLine();
             QString str(line);
             QListWidgetItem *item = new QListWidgetItem(str);
